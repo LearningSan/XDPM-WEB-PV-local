@@ -4,9 +4,8 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { getUser } from "@/lib/user";
 import { createVerifytoken,getTokenByUserId } from "@/lib/refresh_token";
 import { NextRequest,NextResponse } from "next/server";
-import { User } from "@/data/user";
-const JWT_SECRET = process.env.JWT_SECRET || "supersecret"; 
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "supersecret";
+const JWT_SECRET = process.env.JWT_SECRET! 
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!
 
 type UserType = {
   user_id: string;
@@ -45,7 +44,7 @@ export async function createToken(
   );
 
   const expiresAt = new Date();
-  expiresAt.setHours(expiresAt.getHours() + 1);
+  expiresAt.setDate(expiresAt.getDate() + 7);
   const expiresAtStr = expiresAt.toISOString().slice(0, 19).replace("T", " ");
 
   const refreshToken = jwt.sign(
@@ -100,6 +99,8 @@ export function refreshAccessToken(oldAccessToken: string) {
   );
   return accessToken;
 }
+
+
 export async function refreshRefreshToken(oldRefreshToken: string) {
   let payload: any;
 
@@ -117,6 +118,13 @@ export async function refreshRefreshToken(oldRefreshToken: string) {
     throw new Error("No refresh token found");
   }
 
+  // ✅ SO SÁNH HASH (BẮT BUỘC)
+  const isMatch = await bcrypt.compare(oldRefreshToken, session.token);
+
+  if (!isMatch) {
+    throw new Error("Refresh token mismatch");
+  }
+
   // 🔥 tạo access token mới
   const newAccessToken = jwt.sign(
     { user_id: payload.user_id, email: payload.email },
@@ -124,18 +132,28 @@ export async function refreshRefreshToken(oldRefreshToken: string) {
     { expiresIn: "1h" }
   );
 
-  // 🔥 có thể tạo refresh token mới (rotation)
-  const newRefreshToken = jwt.sign(
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7);
+  const expiresAtStr = expiresAt.toISOString().slice(0, 19).replace("T", " ");
+
+
+const newRefreshToken = jwt.sign(
     { user_id: payload.user_id, email: payload.email },
     JWT_REFRESH_SECRET,
     { expiresIn: "7d" }
   );
+
+  // 🔥 update lại DB (QUAN TRỌNG)
+  const newHash = await bcrypt.hash(newRefreshToken, 10);
+  await createVerifytoken(userId, newHash, expiresAtStr);
 
   return {
     accessToken: newAccessToken,
     refreshToken: newRefreshToken,
   };
 }
+
+
   export async function verifyToken(token: string) {
   try {
     let decode = jwt.verify(token, JWT_SECRET) as JwtPayload

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const socialAccountSchema = new mongoose.Schema({
   user_id: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: "User",
     required: true,
   },
@@ -22,17 +22,6 @@ const socialAccountSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-
-  token: {
-    type: String,
-    default: null,
-  },
-
-  token_expires_at: {
-    type: Date,
-    default: null,
-  },
-
   linked_at: {
     type: Date,
     default: Date.now,

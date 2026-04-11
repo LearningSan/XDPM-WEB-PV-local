@@ -68,13 +68,13 @@ const [oldPassword, setOldPassword] = useState("");
   // 🔹 Google login
   const handleGoogleLogin = () => {
   signIn("google", {
-  callbackUrl: "/dashboard",
+  callbackUrl: "/auth/social-callback"
 });
 };
   // 🔹 Facebook login
  const handleFacebookLogin = () => {
  signIn("facebook", {
-  callbackUrl: "/dashboard",
+  callbackUrl: "/auth/social-callback",
 });
 };
     const handleSendOTP = async () => {

@@ -1,6 +1,8 @@
 import { SocialAccount } from "@/data/social_account";
+import { connectDB } from "./db";
 export async function findSocial(provider: string, provider_id: string) {
   try {
+    await connectDB();
     return await SocialAccount.findOne({
       provider,
       provider_id,
@@ -14,9 +16,8 @@ export async function createSocial(
   user_id: string,
   provider: string,
   provider_id: string,
-  provider_email?: string,
-  token?: string,
-  token_expires_at?: Date
+  provider_email?: string
+
 ) {
   try {
     return await SocialAccount.create({
@@ -24,8 +25,7 @@ export async function createSocial(
       provider,
       provider_id,
       provider_email,
-      token,
-      token_expires_at,
+
       linked_at: new Date(),
     });
   } catch (err) {
@@ -35,6 +35,7 @@ export async function createSocial(
 }
 export async function findSocialByUserId(user_id: string) {
   try {
+    await connectDB();
     const result = await SocialAccount.findOne({ user_id });
 
     return result?.provider || null;
@@ -44,41 +45,3 @@ export async function findSocialByUserId(user_id: string) {
   }
 }
 
-
-export async function upsertSocialAccount({
-  user_id,
-  provider,
-  provider_id,
-  provider_email,
-  token,
-  token_expires_at,
-}: {
-  user_id: string;
-  provider: string;
-  provider_id: string;
-  provider_email?: string;
-  token?: string;
-  token_expires_at?: Date;
-}) {
-  return await SocialAccount.findOneAndUpdate(
-    {
-      provider,
-      provider_id,
-    },
-    {
-      $set: {
-        user_id,
-        provider,
-        provider_id,
-        provider_email,
-        token,
-        token_expires_at,
-        linked_at: new Date(),
-      },
-    },
-    {
-      upsert: true,
-      new: true,
-    }
-  );
-}

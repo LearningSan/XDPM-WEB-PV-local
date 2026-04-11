@@ -28,34 +28,46 @@ export async function createUser({
   name: string;
   avatar?: string;
 }) {
-  await connectDB();
+ try {
+    await connectDB();
 
-  const existingUser = await User.findOne({ email });
-  if (existingUser) return getUser(email);
+    if (!email) {
+      throw new Error("Email is required");
+    }
 
-  let passwordHash = null;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) return await getUser(email);
 
-  if (password) {
-    passwordHash = await bcrypt.hash(password, 10);
+  const userData: any = {
+  username: email.split("@")[0],
+  email,
+  name,
+  avatar,
+  bio: "",
+  location: "",
+};
+
+// chỉ thêm nếu có password
+if (password) {
+  userData.passwordHash = await bcrypt.hash(password, 10);
+}
+
+const newUser = await User.create(userData);
+
+    return {
+      user_id: newUser._id.toString(),
+      email: newUser.email,
+      name: newUser.name,
+      username: newUser.username,
+      passwordHash: newUser.passwordHash || null,
+    };
+
+  } catch (err: any) {
+    console.error("🔥 FULL ERROR:", err);
+
+  console.dir(err.errInfo?.details, { depth: null }); // 🔥 QUAN TRỌNG
+    throw err;
   }
-
-  const newUser = await User.create({
-    username: email.split("@")[0],
-    email,
-    passwordHash,
-    name,
-    avatar,
-    bio: "",
-    location: "",
-  });
-
-  return {
-    user_id: newUser._id.toString(),
-    email: newUser.email,
-    name: newUser.name,
-    username: newUser.username,
-    passwordHash: newUser.passwordHash||null,
-  };
 }
 export async function updatePassword(
   user_id: string,
@@ -64,4 +76,24 @@ export async function updatePassword(
   return await User.findByIdAndUpdate(user_id, {
     passwordHash: password_hash,
   });
+}
+export async function getUserById(user_id: string) {
+  await connectDB();
+
+  if (!user_id) return null;
+
+  const user = await User.findById(user_id);
+
+  if (!user) return null;
+
+  return {
+    user_id: user._id.toString(),
+    username: user.username,
+    email: user.email,
+    name: user.name,
+    passwordHash: user.passwordHash || null,
+    avatar: user.avatar || "",
+    bio: user.bio || "",
+    location: user.location || "",
+  };
 }

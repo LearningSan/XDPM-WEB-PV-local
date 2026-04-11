@@ -1,12 +1,12 @@
 import { connectDB } from "@/lib/db";
 import { RefreshToken } from "@/data/refresh_token";
-
 export async function createVerifytoken(
   id: string,
   tokenHash: string,
   expiresAt?: string
 ) {
   try {
+    await connectDB();
     if (!id || !tokenHash) {
       throw new Error("id and tokenHash are required");
     }
