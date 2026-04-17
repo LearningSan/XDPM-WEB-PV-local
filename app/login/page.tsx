@@ -23,7 +23,7 @@ const [oldPassword, setOldPassword] = useState("");
   const handleMessage = (event: MessageEvent) => {
     if (event.data === "LOGIN_SUCCESS") {
       console.log("Login success via popup");
-      window.location.href = "/dashboard";
+      window.location.href = "http://localhost:5173";
     }
   };
 
@@ -57,7 +57,7 @@ const [oldPassword, setOldPassword] = useState("");
       }
 
       console.log("Login successful");
-      window.location.href = "/dashboard";
+      window.location.href = "http://localhost:5173";
     } catch (err) {
       console.error(err);
       setError("Something went wrong");
