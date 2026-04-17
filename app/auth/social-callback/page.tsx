@@ -16,7 +16,7 @@ export default function SocialCallbackPage() {
 
         if (!res.ok) throw new Error("Failed");
 
-        router.replace("/dashboard");
+        router.replace("https://xdpm-web.vercel.app/");
       } catch (e) {
         signOut({ callbackUrl: "/login" });
       }
