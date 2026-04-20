@@ -98,8 +98,9 @@ export default async function middleware(req: NextRequest) {
   const isLoginPage = req.nextUrl.pathname.startsWith("/login");
 
   if (isLoginPage && user) {
-    return NextResponse.redirect("https://xdpm-web.vercel.app/");
-  }
+return NextResponse.redirect(new URL("https://xdpm-web.vercel.app/", req.url));
+
+}
 
   // =========================
   // ✅ Cho phép tất cả request đi tiếp

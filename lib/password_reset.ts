@@ -1,6 +1,6 @@
 import { connectDB } from "@/lib/db";
 import {PasswordReset} from "@/data/password_reset"; 
-
+import mongoose from "mongoose";
 export async function createPassword_Reset(user_id: string, otp: string) {
   await connectDB();
 
@@ -22,13 +22,15 @@ export async function createPassword_Reset(user_id: string, otp: string) {
 }
 export async function checkOTP(user_id: string, otp: string) {
   await connectDB();
+ const cleanOtp = Array.isArray(otp)
+  ? otp.join("")
+  : String(otp).trim();
 
-  const record = await PasswordReset.findOne({
-    user_id,
-    otp,
-    used_at: null,
-    expires_at: { $gt: new Date() }
-  }).sort({ created_at: -1 });
+
+const record = await PasswordReset.findOne({
+  user_id: new mongoose.Types.ObjectId(user_id),
+  otp: cleanOtp,
+}).sort({ created_at: -1 });
 
   if (!record) {
     return {
@@ -42,7 +44,6 @@ export async function checkOTP(user_id: string, otp: string) {
 
   return { success: true };
 }
-
 export async function deleteOTP(user_id: string) {
   try {
     await PasswordReset.deleteMany({ user_id });

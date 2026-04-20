@@ -1,12 +1,12 @@
 import { connectDB } from "@/lib/db";
 import { RefreshToken } from "@/data/refresh_token";
+import mongoose from "mongoose";
 export async function createVerifytoken(
   id: string,
   tokenHash: string,
-  expiresAt?: string
+  expiresAt?: Date
 ) {
   try {
-    await connectDB();
     if (!id || !tokenHash) {
       throw new Error("id and tokenHash are required");
     }
@@ -14,13 +14,12 @@ export async function createVerifytoken(
     await connectDB();
 
     const token = await RefreshToken.create({
-      user_id: id,
+      user_id: new mongoose.Types.ObjectId(id),
       token_hash: tokenHash,
-      expires_at: expiresAt ? new Date(expiresAt) : null,
+      expires_at: expiresAt ?? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // default 7 ngày
     });
 
     return token;
-
   } catch (error) {
     console.error("createVerifytoken error:", error);
     throw error;

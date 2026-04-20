@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOption";
-import { createToken } from "@/helpers/authenHelper";
+import { createToken,setCookies } from "@/helpers/authenHelper";
 import { getUser } from "@/lib/user";
-import { setCookies } from "@/helpers/authenHelper";
 
 export async function POST() {
   const session = await getServerSession(authOptions);
@@ -16,12 +15,26 @@ export async function POST() {
   if (!dbUser) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
-
-  const tokens = await createToken({
+let tokens
+  try {
+  tokens = await createToken({
     user_id: dbUser.user_id,
     email: dbUser.email,
     name: dbUser.name,
-  });
+  })
+  return NextResponse.json({ ok: true })
+} catch (err) {
+  
+
+}
+ 
+
+  if (!tokens) {
+    return NextResponse.json(
+      { error: "Failed to create tokens" },
+      { status: 500 }
+    );
+  }
 
   const res = NextResponse.json({ ok: true });
 
