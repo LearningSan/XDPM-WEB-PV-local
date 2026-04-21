@@ -44,9 +44,7 @@ export default async function middleware(req: NextRequest) {
 
   const res = NextResponse.next();
 
-  // =========================
-  // ✅ CORS (cho FE 5173)
-  // =========================
+  
   res.headers.set("Access-Control-Allow-Origin", "https://xdpm-web.vercel.app/");
   res.headers.set("Access-Control-Allow-Credentials", "true");
   res.headers.set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
@@ -56,29 +54,14 @@ export default async function middleware(req: NextRequest) {
     return new NextResponse(null, { status: 200, headers: res.headers });
   }
 
-  // =========================
-  // ✅ Tạo guest_id nếu chưa có
-  // =========================
-  if (!guestId) {
-    res.cookies.set("guest_id", uuidv4(), {
-      httpOnly: true,
-      path: "/",
-      maxAge: 30 * 24 * 60 * 60, // 30 ngày
-      sameSite: "lax",
-      secure: false, // dev
-    });
-  }
 
-  // =========================
-  // ✅ Refresh token nếu cần
-  // =========================
   if (newAccessToken) {
     res.cookies.set("access_token", newAccessToken, {
       httpOnly: true,
       path: "/",
       maxAge: 60 * 60,
-      sameSite: "lax",
-      secure: false,
+      sameSite: "none",
+      secure: true
     });
   }
 
@@ -87,8 +70,8 @@ export default async function middleware(req: NextRequest) {
       httpOnly: true,
       path: "/",
       maxAge: 7 * 24 * 60 * 60,
-      sameSite: "lax",
-      secure: false,
+      sameSite: "none",
+      secure: true
     });
   }
 
@@ -98,9 +81,9 @@ export default async function middleware(req: NextRequest) {
   const isLoginPage = req.nextUrl.pathname.startsWith("/login");
 
   if (isLoginPage && user) {
-return NextResponse.redirect(new URL("https://xdpm-web.vercel.app/", req.url));
+    return NextResponse.redirect(new URL("https://xdpm-web.vercel.app/", req.url));
 
-}
+  }
 
   // =========================
   // ✅ Cho phép tất cả request đi tiếp

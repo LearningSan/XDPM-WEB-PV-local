@@ -1,9 +1,27 @@
+/**
+ * @swagger
+ * /api/auth/verify-otp:
+ *   post:
+ *     summary: Xác thực OTP
+ *     tags:
+ *       - ForgotPassword
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             email: admin@gmail.com
+ *             otp: 123456
+ *     responses:
+ *       200:
+ *         description: OK
+ */
+
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOption";
-import { createToken } from "@/helpers/authenHelper";
+import { createToken,setCookies } from "@/helpers/authenHelper";
 import { getUser } from "@/lib/user";
-import { setCookies } from "@/helpers/authenHelper";
 
 export async function POST() {
   const session = await getServerSession(authOptions);
