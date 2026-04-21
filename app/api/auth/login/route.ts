@@ -1,57 +1,57 @@
-/**
- * @swagger
- * /api/auth/login:
- *   post:
- *     summary: Đăng nhập bằng email và password
- *     description: API dùng để xác thực người dùng và trả về accessToken + refreshToken (qua cookies)
- *     tags:
- *       - Login
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *                 example: admin@gmail.com
- *                 description: Email hợp lệ của người dùng
- *               password:
- *                 type: string
- *                 example: "123456"
- *                 description: Mật khẩu (ít nhất 6 ký tự)
- *     responses:
- *       200:
- *         description: Đăng nhập thành công
- *         content:
- *           application/json:
- *             example:
- *               user_id: 1
- *               name: "Admin"
- *               email: "admin@gmail.com"
- *       400:
- *         description: Dữ liệu đầu vào không hợp lệ
- *         content:
- *           application/json:
- *             example:
- *               message: "Invalid input"
- *       401:
- *         description: Sai email hoặc password
- *         content:
- *           application/json:
- *             example:
- *               message: "Invalid email or password"
- *       500:
- *         description: Lỗi server
- *         content:
- *           application/json:
- *             example:
- *               message: "Token creation failed"
- */
+  /**
+   * @swagger
+   * /api/auth/login:
+   *   post:
+   *     summary: Đăng nhập bằng email và password
+   *     description: API dùng để xác thực người dùng và trả về accessToken + refreshToken (qua cookies)
+   *     tags:
+   *       - Login
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - email
+   *               - password
+   *             properties:
+   *               email:
+   *                 type: string
+   *                 example: admin@gmail.com
+   *                 description: Email hợp lệ của người dùng
+   *               password:
+   *                 type: string
+   *                 example: "123456"
+   *                 description: Mật khẩu (ít nhất 6 ký tự)
+   *     responses:
+   *       200:
+   *         description: Đăng nhập thành công
+   *         content:
+   *           application/json:
+   *             example:
+   *               user_id: 1
+   *               name: "Admin"
+   *               email: "admin@gmail.com"
+   *       400:
+   *         description: Dữ liệu đầu vào không hợp lệ
+   *         content:
+   *           application/json:
+   *             example:
+   *               message: "Invalid input"
+   *       401:
+   *         description: Sai email hoặc password
+   *         content:
+   *           application/json:
+   *             example:
+   *               message: "Invalid email or password"
+   *       500:
+   *         description: Lỗi server
+   *         content:
+   *           application/json:
+   *             example:
+   *               message: "Token creation failed"
+   */
 
 import { NextRequest,NextResponse } from "next/server";
 import { authenticateUser,createToken,setCookies } from "@/helpers/authenHelper";
