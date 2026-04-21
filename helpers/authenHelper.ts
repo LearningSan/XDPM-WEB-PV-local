@@ -98,18 +98,21 @@ export async function createToken(
   
 export async function setCookies(response:NextResponse,accessToken:string,refreshToken:string) {
   
-    response.cookies.set("access_token", accessToken, {
-    httpOnly: true,
-    secure: false, // nên true nếu HTTPS
-    sameSite: "strict",
-    maxAge: 60 * 60 // 1 giờ
-  });
-  response.cookies.set("refresh_token", refreshToken, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 
-  });
+   response.cookies.set("access_token", accessToken, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+  maxAge: 60 * 60,
+});
+
+response.cookies.set("refresh_token", refreshToken, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+  maxAge: 7 * 24 * 60 * 60,
+});
 }
 
 
