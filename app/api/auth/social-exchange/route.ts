@@ -16,29 +16,29 @@ export async function POST() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 let tokens
-  try {
+ try {
   tokens = await createToken({
     user_id: dbUser.user_id,
     email: dbUser.email,
     name: dbUser.name,
-  })
-  return NextResponse.json({ ok: true })
+  });
 } catch (err) {
-  
-
+  return NextResponse.json(
+    { error: "Failed to create tokens" },
+    { status: 500 }
+  );
 }
- 
 
-  if (!tokens) {
-    return NextResponse.json(
-      { error: "Failed to create tokens" },
-      { status: 500 }
-    );
-  }
+const res = NextResponse.json({ ok: true });
 
-  const res = NextResponse.json({ ok: true });
+if (!tokens) {
+  return NextResponse.json(
+    { error: "Token creation failed" },
+    { status: 500 }
+  );
+}
 
-  await setCookies(res, tokens.accessToken, tokens.refreshToken);
+await setCookies(res, tokens.accessToken, tokens.refreshToken);
 
-  return res;
+return res;
 }
