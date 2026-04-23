@@ -17,39 +17,22 @@
  *         description: OK
  */
 
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/authOption";
-import { createToken,setCookies } from "@/helpers/authenHelper";
-import { getUser } from "@/lib/user";
 
-export async function POST() {
-  const session = await getServerSession(authOptions);
+import { NextRequest,NextResponse } from "next/server";
+import { verifyOTP } from "@/helpers/passwordHelper";
+export async function POST(req: NextRequest) {
+  try {
+    let { email, otp } = await req.json();
 
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const result = await verifyOTP(email, otp);
+
+    return NextResponse.json(result);
+
+  } catch (error) {
+    console.error("Failed to verify", error);
+    return NextResponse.json(
+      { message: "Server error" },
+      { status: 500 }
+    );
   }
-
-  const dbUser = await getUser(session.user.email);
-  if (!dbUser) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
-
-  const tokens = await createToken({
-    user_id: dbUser.user_id,
-    email: dbUser.email,
-    name: dbUser.name,
-  });
-  if (!tokens) {
-  return NextResponse.json(
-    { error: "Failed to create tokens" },
-    { status: 500 }
-  );
-}
-
-  const res = NextResponse.json({ ok: true });
-
-  await setCookies(res, tokens.accessToken, tokens.refreshToken);
-
-  return res;
 }
