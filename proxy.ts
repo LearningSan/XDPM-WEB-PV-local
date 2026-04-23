@@ -45,7 +45,7 @@ export default async function middleware(req: NextRequest) {
   const res = NextResponse.next();
 
   
-  res.headers.set("Access-Control-Allow-Origin", "https://xdpm-web.vercel.app/");
+  res.headers.set("Access-Control-Allow-Origin", "http://localhost:5173");
   res.headers.set("Access-Control-Allow-Credentials", "true");
   res.headers.set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
   res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -81,7 +81,7 @@ export default async function middleware(req: NextRequest) {
   const isLoginPage = req.nextUrl.pathname.startsWith("/login");
 
   if (isLoginPage && user) {
-    return NextResponse.redirect(new URL("https://xdpm-web.vercel.app/", req.url));
+    return NextResponse.redirect(new URL("http://localhost:5173", req.url));
 
   }
 

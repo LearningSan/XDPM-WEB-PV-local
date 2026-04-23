@@ -16,7 +16,7 @@ export default function SocialCallbackPage() {
 
         if (!res.ok) throw new Error("Failed");
 
-        router.replace("https://xdpm-web.vercel.app/");
+        router.replace("http://localhost:5173");
       } catch (e) {
         signOut({ callbackUrl: "/login" });
       }
