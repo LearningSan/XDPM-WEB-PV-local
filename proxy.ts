@@ -5,30 +5,33 @@ import { refreshRefreshToken, verifyToken } from "./helpers/authenHelper";
 async function handleTokens(accessToken?: string, refreshToken?: string) {
   let user: any = null;
 
+  // 1. Nếu có accessToken → verify
   if (accessToken) {
     user = await verifyToken(accessToken);
 
     if (user) {
       return { user, newAccessToken: null, newRefreshToken: null };
     }
+  }
 
-    if (refreshToken) {
-      try {
-        const tokens = await refreshRefreshToken(refreshToken);
+  // 2. Nếu accessToken lỗi hoặc không có → dùng refreshToken
+  if (refreshToken) {
+    try {
+      const tokens = await refreshRefreshToken(refreshToken);
 
-        user = await verifyToken(tokens.accessToken);
+      user = await verifyToken(tokens.accessToken);
 
-        return {
-          user,
-          newAccessToken: tokens.accessToken,
-          newRefreshToken: tokens.refreshToken,
-        };
-      } catch {
-        return { user: null, newAccessToken: null, newRefreshToken: null };
-      }
+      return {
+        user,
+        newAccessToken: tokens.accessToken,
+        newRefreshToken: tokens.refreshToken,
+      };
+    } catch {
+      return { user: null, newAccessToken: null, newRefreshToken: null };
     }
   }
 
+  // 3. Không có gì → logout
   return { user: null, newAccessToken: null, newRefreshToken: null };
 }
 
